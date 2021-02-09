@@ -6,7 +6,7 @@
   	*
     */
 
-  #include <stdio.h>
+  	#include <stdio.h>
 	#include <stdlib.h>
 	#include <ctype.h>
 	#include <stdbool.h>
@@ -48,20 +48,20 @@
 
     		bool b = isNumber(argc, argv);
 
-		    if (b)
-		    {
-	    		  int i = 1,j = 2,counter = 1;
-	    		  for (; i<=atoi(argv[1]); i++)
-	    		  {
+		if (b)
+		{
+	    		int i = 1,j = 2,counter = 1;
+	    		for (; i<=atoi(argv[1]); i++)
+	    		{
             			sleep(1);
             			printf("%d Seconds passed\n", counter);
             			printf("%d Seconds left\n", (atoi(argv[1]) - i));
             			counter++;
-	    		  }
-	    		  for (; j<argc; j++)
+	    		}
+	    		for (; j<argc; j++)
         		{
-                	printf("%s\n", argv[j]);  
-			      }
-			      exit(0);
+                	  	printf("%s\n", argv[j]);  
+			}
+			exit(0);
 		  }
-}
+	}
