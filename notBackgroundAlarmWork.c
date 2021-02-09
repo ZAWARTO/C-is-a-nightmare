@@ -63,5 +63,5 @@
                 	  	printf("%s\n", argv[j]);  
 			}
 			exit(0);
-		  }
+		}
 	}
