@@ -1,10 +1,10 @@
-  /**
+  	/**
   	* @file notBackgroundAlarmWork.c
   	* @author ZAWARTO
   	* @date 20210209
   	* @brief C File of a basic alarm clock that doesn't work in the background
   	*
-    */
+    	*/
 
   	#include <stdio.h>
 	#include <stdlib.h>
