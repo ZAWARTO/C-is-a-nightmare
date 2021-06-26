@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) //argv1 Dir1 argv2 Dir2 argv3 Fich argv4 Pos
                         lseek(fich, sizeFich, SEEK_SET);
                         memset(buf, 0, BS);
                         strcpy(buf, "File name: ");
-                        strcat(buf, path2);
+                        strcat(buf, path);
                         strcat(buf, " Size: ");
                         sprintf(dataSizeCounterChar,"%d", dataSizeCounter);
                         strcat(buf, dataSizeCounterChar);
