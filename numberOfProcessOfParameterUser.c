@@ -1,3 +1,4 @@
+#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -6,39 +7,67 @@
 
 int main(int argc, char *argv[])
 {
-    if(argc != 2){error("Incorrect number of arguments")};
-    int pfd[2], pid;
-    char user[100];
-    sprintf(user, "%s", argv[1]);
-    if (pipe(pfd) == -1) error("pipe");
-    printf("parent: pipe created, channels: READ=%d and WRITE=%d\n", pfd[0], pfd[1]);
-    switch (pid = fork()) {
-        case -1: error("fork");
-        case 0: /* 1st child: who */
-        printf("1st child process created\n");
-        if (close(1) == -1) error("close");
-        if (dup(pfd[1]) != 1) error("dup");
-        close(pfd[0]); close(pfd[1]);
-        execlp("ps", "ps", "aux", NULL);
-        error("execlp");
-    }
-    printf("parent: ps(%d) process launched\n", pid);
-    switch (pid = fork())
-    {
-        case -1: error("fork");
-        case 0: /* 2nd child process: wc -l */
-        printf("2nd child process created\n");
-        if (close(0) == -1) error("close");
-        if (dup(pfd[0]) != 0) error("grep");
-        close(pfd[0]); close(pfd[1]);
-        execlp("grep", "grep", user, NULL);
-        error("execlp");
-    }
-    printf("parent: grep(%d) process launched\n", pid);
-    close(pfd[0]); close(pfd[1]);
-    while ((pid = wait(NULL)) != -1)
-    {
-        printf("parent: %d process finished\n", pid);
-    }
-    return 0;
+   if(argc != 2){error("Incorrect number of arguments")};
+   char user[100];
+   sprintf(user, "%s", argv[1]);
+   int pfd1[2], pfd2[2], pid;
+
+   if(pipe(pfd1) != 0) error("pipe 1");
+
+   printf("parent: pipe created, channels: READ=%d and WRITE=%d\n", pfd1[0], pfd1[1]);
+
+   switch(pid = fork())
+   {
+      case -1: error("fork");
+      case 0: 
+         printf("1st child process created\n");
+         if (close(1)==-1) error ("close 1");
+         if (dup(pfd1[1]) != 1) error("dup pipe1[1]");
+         close(pfd1[0]); close(pfd1[1]);
+         execlp("ps", "ps", "aux", NULL);
+         error("ps execlp");
+   }
+ 
+   printf("parent: ps(%d) process launched\n", pid);
+   close(pfd1[1]);
+   if(pipe(pfd2) != 0) error("pipe 2");
+   printf("parent: pipe 2 created, channels: READ=%d and WRITE=%d\n", pfd2[0], pfd2[1]);
+   
+   switch(pid = fork())
+   {
+      case -1: error("fork");
+      case 0:
+         printf("2nd child process created\n");
+         close(pfd2[0]);
+         if (close(0)==-1) error ("close 0");
+         if (dup(pfd1[0]) != 0) error("dup pipe1[0]");
+         close(pfd1[0]);
+         if (close(1)==-1) error ("close 1");
+         if (dup(pfd2[1]) !=1) error("dup pipe2[1]");
+         close(pfd2[1]);
+         execlp("grep", "grep", user, NULL);
+         error("grep execlp");
+   }
+    
+   printf("parent: grep(%d) process launched\n", pid);
+   close(pfd1[0]);
+   close(pfd2[1]);
+
+   switch(pid = fork())
+   {
+      case -1: error("fork");
+      case 0: 
+	 printf("3rd child process created\n");
+         if (close(0)==-1) error ("close 0");
+         if (dup(pfd2[0]) !=0) error("dup pipe2[0]");
+         execlp("wc", "wc", "-l", NULL);
+         error("wc execlp");
+   }
+   printf("parent: wc(%d) process launched\n", pid);
+   close(pfd2[0]);
+   while ((pid = wait(NULL)) != -1)
+   {
+	printf("parent: %d process finished\n", pid);
+   }
+   return 0;
 }
