@@ -1,3 +1,11 @@
+/**
+ * @file processOfParameterUser.c
+ * @author ZAWARTO
+ * @date 20210627
+ * @brief C File of a basic pipes programm that prints the process of a user introduced by parameter
+ *
+*/
+
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
