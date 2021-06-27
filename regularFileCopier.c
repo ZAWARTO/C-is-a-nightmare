@@ -1,3 +1,17 @@
+/**
+ * @file processOfParameterUser.c
+ * @author ZAWARTO
+ * @date 20210627
+ * @brief C File of a basic programm using the unix system calls to access files 
+ * and directories that copy the regular files of the first directory introduced 
+ * by parameter into the second one but it starts to copy from a number of bytes 
+ * introduced in the last parameter, it makes a register of the path/name and 
+ * size of the files copied into a file introduced on the third parameter.
+ * The files copied have all the execution permits for groups, owner and others 
+ * but no write permit for the owner.
+ *
+*/
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
