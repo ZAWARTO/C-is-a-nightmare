@@ -1,5 +1,5 @@
 /**
- * @file notBackgroundAlarmWork.c
+ * @file numberOfProcessOfParameterUser.c
  * @author ZAWARTO
  * @date 20210627
  * @brief C File of a basic pipes programm that prints the number of process of a user introduced by parameter
