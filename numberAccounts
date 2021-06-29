@@ -1,0 +1,81 @@
+/**
+ * @file numberOfProcessOfParameterUser.c
+ * @author ZAWARTO
+ * @date 20210516
+ * @brief C File of a basic pipes programm that prints the number of accounts 
+ * containing a match to the given pattern introduced as a parameter
+ *
+*/
+
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#define error(a) {perror(a); exit(1);};
+
+int main(int argc, char *argv[])
+{ 
+   int pid;
+   unlink("my_fifo");
+   if (mkfifo("my_fifo", 0644) == -1) error("mkfifo");
+   printf("parent: fifo created\n");
+
+   switch (pid = fork()) 
+   {
+      case -1: error("fork");
+      case 0: /* 1st child process: who */
+         printf("1st child process created\n");
+         if (close(1) == -1) error("close");
+         if (open("my_fifo", O_WRONLY) != 1) error("open");
+         execlp("getent", "getent", "passwd", NULL);
+         error("getent execlp");
+   }
+   
+   unlink("my_fifo2");
+   if(mkfifo("my_fifo2", 0644) == -1) error ("mkfifo");
+   printf("parent: second fifo created\n");
+   printf("Parent: getent(%d) proccess launched\n",pid);
+
+   switch(pid = fork())
+   {
+
+      case -1: error("fork");
+      case 0: /*2nd child process: grep*/
+         if (close(0) == -1) error("close");
+         if (open("my_fifo", O_RDONLY) !=0) error("open");
+
+         if(close(1) == -1) error("close");
+         if(open("my_fifo2",O_WRONLY)!=1) error("open");
+
+         execlp("grep", "grep", "acaf00",NULL);
+         error("grep excelp");
+
+   }
+   
+   printf("Parent: grep(%d) proccess launched\n",pid);
+   
+   switch(pid = fork())
+   {
+      case -1: error("fork");
+      case 0: /*3rd child process: wl*/
+         if(close(0) == -1)error("close");
+         if (open("my_fifo2", O_RDONLY) != 0) error("open");
+         execlp("wc", "wc", "-l", NULL);
+         error("wx execlp");
+
+   }
+   
+   printf("parent: wc(%d) process launched\n", pid);
+
+   while ((pid = wait(NULL)) != -1)
+   {
+      printf("parent: %d process finished\n", pid);
+   }
+   unlink("my_fifo");
+   unlink("my_fifo2");
+   printf("parent: fifo and fifo2 removed\n");
+   return 0;
+}
